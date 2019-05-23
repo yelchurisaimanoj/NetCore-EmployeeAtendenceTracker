@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EFCoreCodeFirstSample.AutoMapperConfig;
+using EFCoreCodeFirstSample.Entities;
 using EFCoreCodeFirstSample.Models;
-using EFCoreCodeFirstSample.Models.DataManager;
-using EFCoreCodeFirstSample.Models.Repository;
+using EFCoreCodeFirstSample.Data;
 using EFCoreCodeFirstSample.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,7 +36,11 @@ namespace EFCoreCodeFirstSample
             services.AddScoped<IDataRepository<Employee>, EmployeeManager>();
 
             //        .AddScoped<IDataRepository<AttendenceLog>, AttendenceManager>();
-            services.AddScoped<IAttenedenceRepository, AttendenceManager>();
+            services.AddScoped<IDataRepository<Attendence>, AttendenceManager>();
+            var config = new AutoMapper.MapperConfiguration(cfg => cfg.AddProfile(new AutoMapperProfile()));
+            var mapper = config.CreateMapper();
+            services.AddSingleton(mapper);
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSwaggerGen(x =>
             {

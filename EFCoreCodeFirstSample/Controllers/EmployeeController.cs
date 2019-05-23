@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using EFCoreCodeFirstSample.Entities;
 using EFCoreCodeFirstSample.Models;
-using EFCoreCodeFirstSample.Models.Repository;
+using EFCoreCodeFirstSample.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,17 +16,18 @@ namespace EFCoreCodeFirstSample.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IDataRepository<Employee> _dataRepository;
-
-        public EmployeeController(IDataRepository<Employee> dataRepository)
+        private readonly IMapper _mapper;
+        public EmployeeController(IDataRepository<Employee> dataRepository, IMapper mapper)
         {
             _dataRepository = dataRepository;
+            _mapper = mapper;
         }
 
         // GET: api/Employee
         [HttpGet]
         public IActionResult Get()
         {
-            IEnumerable<Employee> employees = _dataRepository.GetAll();
+            IEnumerable<EmployeeViewModel> employees = _mapper.Map<IEnumerable<EmployeeViewModel>>(_dataRepository.GetAll());
             return Ok(employees);
         }
 
@@ -44,14 +47,14 @@ namespace EFCoreCodeFirstSample.Controllers
 
         // POST: api/Employee
         [HttpPost]
-        public IActionResult Post([FromBody] Employee employee)
+        public IActionResult Post([FromBody] EmployeeViewModel employee)
         {
             if (employee == null)
             {
                 return BadRequest("Employee is null.");
             }
 
-            _dataRepository.Add(employee);
+            _dataRepository.Add(_mapper.Map<Employee>(employee));
             return CreatedAtRoute(
                   "Get",
                   new { Id = employee.EmployeeId },
@@ -60,7 +63,7 @@ namespace EFCoreCodeFirstSample.Controllers
 
         // PUT: api/Employee/5
         [HttpPut("{id}")]
-        public IActionResult Put(long id, [FromBody] Employee employee)
+        public IActionResult Put(long id, [FromBody] EmployeeViewModel employee)
         {
             if (employee == null)
             {
@@ -73,7 +76,7 @@ namespace EFCoreCodeFirstSample.Controllers
                 return NotFound("The Employee record couldn't be found.");
             }
 
-            _dataRepository.Update(employeeToUpdate, employee);
+            _dataRepository.Update(employeeToUpdate, _mapper.Map<Employee>(employee));
             return NoContent();
         }
 

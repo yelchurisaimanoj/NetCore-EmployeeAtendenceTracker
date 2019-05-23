@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using EFCoreCodeFirstSample.Models.Repository;
+using EFCoreCodeFirstSample.Entities;
+using EFCoreCodeFirstSample.Data;
 
-namespace EFCoreCodeFirstSample.Models.DataManager
+namespace EFCoreCodeFirstSample.Data
 {
     public class EmployeeManager : IDataRepository<Employee>
     {
@@ -44,6 +45,11 @@ namespace EFCoreCodeFirstSample.Models.DataManager
         {
             _employeeContext.Employees.Remove(employee);
             _employeeContext.SaveChanges();
+        }
+
+        public IEnumerable<Employee> GetListByID(long ID)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
